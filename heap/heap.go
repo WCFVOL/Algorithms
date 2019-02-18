@@ -30,6 +30,17 @@ func Pop(h Heap) interface{} {
 	return h.Pop()
 }
 
+func Remove(h Heap, i int) interface{} {
+	n := h.Len() - 1
+	if n != i {
+		h.Swap(n, i)
+		if !down(h, i, n) {
+			up(h, i)
+		}
+	}
+	return h.Pop()
+}
+
 func down(h Heap, i0, n int) bool {
 	i := i0
 	for {
