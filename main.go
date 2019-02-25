@@ -1,9 +1,12 @@
 package main
 
-import (
-	"container/heap"
-)
+import "fmt"
+
+var k,v interface{}
 
 func main() {
-	heap.Init()
+	k = 123
+	v = "123"
+	fmt.Printf("123\n");
+	fmt.Print(k,v)
 }
