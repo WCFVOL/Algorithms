@@ -24,7 +24,7 @@ func TestRbtree_Insert(t *testing.T) {
 		list[i] = key
 	}
 	for i := 99; i >= 0; i-- {
-		fmt.Print(list[i],",")
+		fmt.Print(list[i], ",")
 		fmt.Println(tree.Search(list[i]))
 	}
 }

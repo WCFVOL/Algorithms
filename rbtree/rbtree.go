@@ -61,7 +61,7 @@ func (tree *rbtree) insertFixUp(now *node) {
 	for nod.p != nil && nod.p.red {
 		if nod.p == nod.p.p.left {
 			y := nod.p.p.right
-			if y!=nil&&y.red {
+			if y != nil && y.red {
 				nod.p.red = false
 				y.red = false
 				nod.p.p.red = true
@@ -75,7 +75,7 @@ func (tree *rbtree) insertFixUp(now *node) {
 			}
 		} else {
 			y := nod.p.p.left
-			if y!=nil&&y.red {
+			if y != nil && y.red {
 				nod.p.red = false
 				y.red = false
 				nod.p.p.red = true
