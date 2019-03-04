@@ -16,7 +16,7 @@ func newNode(k, v interface{}) *node {
 	}
 }
 
-func (now *node) leftRotate() {
+func (now *node) leftRotate(tree *rbtree) {
 	right := now.right
 	now.right = right.left
 	if right.left != nil {
@@ -29,12 +29,14 @@ func (now *node) leftRotate() {
 		} else {
 			now.p.right = right
 		}
+	} else {
+		tree.root = right
 	}
 	right.left = now
 	now.p = right
 }
 
-func (now *node) rightRotate() {
+func (now *node) rightRotate(tree *rbtree) {
 	left := now.left
 	now.left = left.right
 	if left.right != nil {
@@ -47,6 +49,8 @@ func (now *node) rightRotate() {
 		} else {
 			now.p.right = left
 		}
+	} else {
+		tree.root = left
 	}
 	left.right = now
 	now.p = left

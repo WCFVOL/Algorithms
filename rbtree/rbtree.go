@@ -61,31 +61,31 @@ func (tree *rbtree) insertFixUp(now *node) {
 	for nod.p != nil && nod.p.red {
 		if nod.p == nod.p.p.left {
 			y := nod.p.p.right
-			if y.red {
+			if y!=nil&&y.red {
 				nod.p.red = false
 				y.red = false
 				nod.p.p.red = true
 			} else if nod == nod.p.right {
 				nod = nod.p
-				nod.leftRotate()
+				nod.leftRotate(tree)
 			} else {
 				nod.p.red = false
 				nod.p.p.red = false
-				nod.rightRotate()
+				nod.p.p.rightRotate(tree)
 			}
 		} else {
 			y := nod.p.p.left
-			if y.red {
+			if y!=nil&&y.red {
 				nod.p.red = false
 				y.red = false
 				nod.p.p.red = true
 			} else if nod == nod.p.left {
 				nod = nod.p
-				nod.rightRotate()
+				nod.rightRotate(tree)
 			} else {
 				nod.p.red = false
 				nod.p.p.red = false
-				nod.leftRotate()
+				nod.p.p.leftRotate(tree)
 			}
 		}
 	}
