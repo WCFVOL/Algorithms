@@ -29,11 +29,11 @@ func newNil() *node {
 func (now *node) leftRotate(tree *rbtree) {
 	right := now.right
 	now.right = right.left
-	if right.left != nil {
+	if right.left != tree.nil {
 		right.left.p = now
 	}
 	right.p = now.p
-	if now.p != nil {
+	if now.p != tree.nil {
 		if now.p.left == now {
 			now.p.left = right
 		} else {
@@ -49,11 +49,11 @@ func (now *node) leftRotate(tree *rbtree) {
 func (now *node) rightRotate(tree *rbtree) {
 	left := now.left
 	now.left = left.right
-	if left.right != nil {
+	if left.right != tree.nil {
 		left.right.p = now
 	}
 	left.p = now.p
-	if now.p != nil {
+	if now.p != tree.nil {
 		if now.p.left == now {
 			now.p.left = left
 		} else {

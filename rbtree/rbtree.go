@@ -9,18 +9,22 @@ type rbtree struct {
 }
 
 func NewRBTree(less func(a, b interface{}) bool, equal func(a, b interface{}) bool) *rbtree {
-	return &rbtree{
+	result := &rbtree{
 		less:  less,
 		equal: equal,
 		nil:   newNil(),
 	}
+	result.root = result.nil
+	return result
 }
 
 func (tree *rbtree) Insert(k, v interface{}) {
 	nod := newNode(k, v)
+	nod.left = tree.nil
+	nod.right = tree.nil
 	now := tree.root
-	var fa *node
-	for now != nil {
+	fa := tree.nil
+	for now != tree.nil {
 		fa = now
 		if tree.less(nod.k, fa.k) {
 			now = fa.left
@@ -29,7 +33,7 @@ func (tree *rbtree) Insert(k, v interface{}) {
 		}
 	}
 	nod.p = fa
-	if fa == nil {
+	if fa == tree.nil {
 		tree.root = nod
 	} else if tree.less(nod.k, fa.k) {
 		fa.left = nod
@@ -41,7 +45,7 @@ func (tree *rbtree) Insert(k, v interface{}) {
 
 func (tree *rbtree) Search(k interface{}) interface{} {
 	now := tree.searchNode(k)
-	if now == nil {
+	if now == tree.nil {
 		return nil
 	} else {
 		return now.v
@@ -50,17 +54,17 @@ func (tree *rbtree) Search(k interface{}) interface{} {
 
 func (tree *rbtree) searchNode(k interface{}) *node {
 	now := tree.root
-	if now == nil {
+	if now == tree.nil {
 		return nil
 	}
-	for now != nil && !tree.equal(k, now.k) {
+	for now != tree.nil && !tree.equal(k, now.k) {
 		if tree.less(k, now.k) {
 			now = now.left
 		} else {
 			now = now.right
 		}
 	}
-	if now == nil {
+	if now == tree.nil {
 		return nil
 	} else {
 		return now
@@ -69,7 +73,7 @@ func (tree *rbtree) searchNode(k interface{}) *node {
 
 func (tree *rbtree) Remove(k interface{}) interface{} {
 	now := tree.searchNode(k)
-	if now == nil {
+	if now == tree.nil {
 		return nil
 	}
 	tree.removeNode(now)
@@ -80,10 +84,10 @@ func (tree *rbtree) removeNode(nod *node) {
 	now := nod
 	var x *node
 	red := now.red
-	if now.left == nil {
+	if now.left == tree.nil {
 		x = now.right
 		tree.transplant(now, x)
-	} else if now.right == nil {
+	} else if now.right == tree.nil {
 		x = now.left
 		tree.transplant(now, x)
 	} else {
@@ -91,9 +95,7 @@ func (tree *rbtree) removeNode(nod *node) {
 		red = now.red
 		x = now.right
 		if now.p == nod {
-			if x != nil {
-				x.p = now
-			}
+			x.p = now
 		} else {
 			tree.transplant(now, now.right)
 			now.right = nod.right
@@ -110,6 +112,9 @@ func (tree *rbtree) removeNode(nod *node) {
 }
 
 func (tree *rbtree) deleteFixUp(nod *node) {
+	//defer func(tree *node) {
+	//	fmt.Println("wtf")
+	//}(nod)
 	now := nod
 	for now != tree.root && !now.red {
 		if now == now.p.left {
@@ -119,9 +124,6 @@ func (tree *rbtree) deleteFixUp(nod *node) {
 				now.p.red = true
 				now.p.leftRotate(tree)
 				w = now.p.right
-			}
-			if w.left == nil || w.right == nil {
-				break
 			}
 			if !w.right.red && !w.left.red {
 				w.red = true
@@ -145,9 +147,6 @@ func (tree *rbtree) deleteFixUp(nod *node) {
 				now.p.rightRotate(tree)
 				w = now.p.left
 			}
-			if w.left == nil || w.right == nil {
-				break
-			}
 			if !w.right.red && !w.left.red {
 				w.red = true
 				now = now.p
@@ -169,28 +168,26 @@ func (tree *rbtree) deleteFixUp(nod *node) {
 
 // 把u父亲的儿子u 替换为v 不涉及u和v的孩子
 func (tree *rbtree) transplant(u *node, v *node) {
-	if u.p == nil {
+	if u.p == tree.nil {
 		tree.root = v
 	} else if u == u.p.left {
 		u.p.left = v
 	} else {
 		u.p.right = v
 	}
-	if v != nil {
-		v.p = u.p
-	}
+	v.p = u.p
 }
 
 func (tree *rbtree) Clear() {
-	tree.root = nil
+	tree.root = tree.nil
 }
 
 func (tree *rbtree) insertFixUp(now *node) {
 	nod := now
-	for nod.p != nil && nod.p.red {
+	for nod.p != tree.nil && nod.p.red {
 		if nod.p == nod.p.p.left {
 			y := nod.p.p.right
-			if y != nil && y.red {
+			if y != tree.nil && y.red {
 				nod.p.red = false
 				y.red = false
 				nod.p.p.red = true
@@ -204,7 +201,7 @@ func (tree *rbtree) insertFixUp(now *node) {
 			}
 		} else {
 			y := nod.p.p.left
-			if y != nil && y.red {
+			if y != tree.nil && y.red {
 				nod.p.red = false
 				y.red = false
 				nod.p.p.red = true
@@ -224,10 +221,10 @@ func (tree *rbtree) insertFixUp(now *node) {
 //nod子树的最小值
 func (tree *rbtree) Minimum(nod *node) *node {
 	now := nod
-	if now == nil {
+	if now == tree.nil {
 		return nil
 	}
-	for now.left != nil {
+	for now.left != tree.nil {
 		now = now.left
 	}
 	return now
@@ -236,10 +233,10 @@ func (tree *rbtree) Minimum(nod *node) *node {
 //nod子树的最大值
 func (tree *rbtree) Maximum(nod *node) *node {
 	now := nod
-	if now == nil {
+	if now == tree.nil {
 		return nil
 	}
-	for now.left != nil {
+	for now.left != tree.nil {
 		now = now.left
 	}
 	return now
