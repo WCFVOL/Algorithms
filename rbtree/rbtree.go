@@ -38,6 +38,15 @@ func (tree *rbtree) Insert(k, v interface{}) {
 }
 
 func (tree *rbtree) Search(k interface{}) interface{} {
+	now := tree.searchNode(k)
+	if now == nil {
+		return nil
+	} else {
+		return now.v
+	}
+}
+
+func (tree *rbtree) searchNode(k interface{}) *node {
 	now := tree.root
 	if now == nil {
 		return nil
@@ -52,8 +61,82 @@ func (tree *rbtree) Search(k interface{}) interface{} {
 	if now == nil {
 		return nil
 	} else {
-		return now.v
+		return now
 	}
+}
+
+func (tree *rbtree) Remove(k interface{}) interface{} {
+	now := tree.searchNode(k)
+	if now == nil {
+		return nil
+	}
+	tree.removeNode(now)
+	return now.v
+}
+
+func (tree *rbtree) removeNode(nod *node) {
+	now := nod
+	var x *node
+	red := now.red
+	if now.left == nil {
+		x = now.right
+		tree.transplant(now, x)
+	} else if now.right == nil {
+		x = now.left
+		tree.transplant(now, x)
+	} else {
+		now = tree.Minimum(now.right)
+		red = now.red
+		x = now.right
+		if now.p == nod {
+			x.p = now
+		} else {
+			tree.transplant(now, now.right)
+			now.right = nod.right
+			now.right.p = now
+		}
+		tree.transplant(nod, now)
+		now.left = nod.left
+		now.left.p = now
+		now.red = nod.red
+	}
+	if !red {
+		tree.deleteFixUp(now)
+	}
+}
+
+func (tree *rbtree) deleteFixUp(nod *node) {
+	now := nod
+	for now != tree.root && !now.red {
+		if now == now.p.left {
+			w := now.p.right
+			if w.red {
+				w.red = false
+				now.p.red = true
+				now.p.leftRotate(tree)
+				w = now.p.right
+			}
+
+		}
+	}
+}
+
+// 把u父亲的儿子u 替换为v 不涉及u和v的孩子
+func (tree *rbtree) transplant(u *node, v *node) {
+	if u.p == nil {
+		tree.root = v
+	} else if u == u.p.left {
+		u.p.left = v
+	} else {
+		u.p.right = v
+	}
+	if v != nil {
+		v.p = u.p
+	}
+}
+
+func (tree *rbtree) Clear() {
+	tree.root = nil
 }
 
 func (tree *rbtree) insertFixUp(now *node) {
@@ -90,4 +173,28 @@ func (tree *rbtree) insertFixUp(now *node) {
 		}
 	}
 	tree.root.red = false
+}
+
+//nod子树的最小值
+func (tree *rbtree) Minimum(nod *node) *node {
+	now := nod
+	if now == nil {
+		return nil
+	}
+	for now.left != nil {
+		now = now.left
+	}
+	return now
+}
+
+//nod子树的最大值
+func (tree *rbtree) Maximum(nod *node) *node {
+	now := nod
+	if now == nil {
+		return nil
+	}
+	for now.left != nil {
+		now = now.left
+	}
+	return now
 }

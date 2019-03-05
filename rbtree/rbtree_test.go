@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
+	"time"
 )
 
 func less(k1, k2 interface{}) bool {
@@ -15,16 +16,20 @@ func equal(k1, k2 interface{}) bool {
 }
 
 func TestRbtree_Insert(t *testing.T) {
+	rand.Seed(time.Now().Unix())
 	tree := NewRBTree(less, equal)
-	list := [100]int{}
-	for i := 0; i < 100; i++ {
+	list := [1000]int{}
+	for i := 0; i < 1000; i++ {
 		key := rand.Intn(100)
 		value := key
 		tree.Insert(key, value)
 		list[i] = key
 	}
-	for i := 99; i >= 0; i-- {
-		fmt.Print(list[i], ",")
-		fmt.Println(tree.Search(list[i]))
+	for i := 999; i >= 0; i-- {
+		key := list[i]
+		value := tree.Search(key)
+		if key != value {
+			fmt.Println(key, value)
+		}
 	}
 }
