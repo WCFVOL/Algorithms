@@ -16,6 +16,16 @@ func newNode(k, v interface{}) *node {
 	}
 }
 
+func newNil() *node {
+	return &node{
+		left:  nil,
+		right: nil,
+		red:   false,
+		k:     nil,
+		v:     nil,
+	}
+}
+
 func (now *node) leftRotate(tree *rbtree) {
 	right := now.right
 	now.right = right.left

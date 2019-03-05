@@ -33,3 +33,18 @@ func TestRbtree_Insert(t *testing.T) {
 		}
 	}
 }
+
+func TestRbtree_Remove(t *testing.T) {
+	//rand.Seed(time.Now().Unix())
+	tree := NewRBTree(less, equal)
+	for i := 0; i < 5; i++ {
+		key := i
+		value := key
+		tree.Insert(key, value)
+	}
+	for i := 0; i < 5; i++ {
+		key := i
+		fmt.Println(tree.Remove(key))
+	}
+
+}

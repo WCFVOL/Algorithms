@@ -3,6 +3,7 @@ package rbtree
 type rbtree struct {
 	root  *node
 	size  int
+	nil   *node
 	less  func(k1, k2 interface{}) bool
 	equal func(k1, k2 interface{}) bool
 }
@@ -11,6 +12,7 @@ func NewRBTree(less func(a, b interface{}) bool, equal func(a, b interface{}) bo
 	return &rbtree{
 		less:  less,
 		equal: equal,
+		nil:   newNil(),
 	}
 }
 
@@ -89,7 +91,9 @@ func (tree *rbtree) removeNode(nod *node) {
 		red = now.red
 		x = now.right
 		if now.p == nod {
-			x.p = now
+			if x != nil {
+				x.p = now
+			}
 		} else {
 			tree.transplant(now, now.right)
 			now.right = nod.right
@@ -101,7 +105,7 @@ func (tree *rbtree) removeNode(nod *node) {
 		now.red = nod.red
 	}
 	if !red {
-		tree.deleteFixUp(now)
+		tree.deleteFixUp(x)
 	}
 }
 
@@ -116,9 +120,51 @@ func (tree *rbtree) deleteFixUp(nod *node) {
 				now.p.leftRotate(tree)
 				w = now.p.right
 			}
-
+			if w.left == nil || w.right == nil {
+				break
+			}
+			if !w.right.red && !w.left.red {
+				w.red = true
+				now = now.p
+			} else if w.left.red {
+				w.red = true
+				w.left.red = false
+				w.rightRotate(tree)
+			} else {
+				w.red = now.p.red
+				now.p.red = false
+				w.right.red = false
+				now.p.leftRotate(tree)
+				now = tree.root
+			}
+		} else {
+			w := now.p.left
+			if w.red {
+				w.red = false
+				now.p.red = true
+				now.p.rightRotate(tree)
+				w = now.p.left
+			}
+			if w.left == nil || w.right == nil {
+				break
+			}
+			if !w.right.red && !w.left.red {
+				w.red = true
+				now = now.p
+			} else if w.right.red {
+				w.red = true
+				w.right.red = false
+				w.leftRotate(tree)
+			} else {
+				w.red = now.p.red
+				now.p.red = false
+				w.left.red = false
+				now.p.rightRotate(tree)
+				now = tree.root
+			}
 		}
 	}
+	now.red = false
 }
 
 // 把u父亲的儿子u 替换为v 不涉及u和v的孩子
@@ -153,7 +199,7 @@ func (tree *rbtree) insertFixUp(now *node) {
 				nod.leftRotate(tree)
 			} else {
 				nod.p.red = false
-				nod.p.p.red = false
+				nod.p.p.red = true
 				nod.p.p.rightRotate(tree)
 			}
 		} else {
@@ -167,7 +213,7 @@ func (tree *rbtree) insertFixUp(now *node) {
 				nod.rightRotate(tree)
 			} else {
 				nod.p.red = false
-				nod.p.p.red = false
+				nod.p.p.red = true
 				nod.p.p.leftRotate(tree)
 			}
 		}
