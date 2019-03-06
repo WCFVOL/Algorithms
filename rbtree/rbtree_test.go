@@ -28,39 +28,24 @@ func TestRbtree_Insert(t *testing.T) {
 		if r > v {
 			v = r
 		}
-		//if !isRBTree(tree) {
-		//	fmt.Println("fuck u", key)
-		//}
 		list[i] = key
 	}
 	fmt.Println(v)
-	//for i := 9999; i >= 0; i-- {
-	//	key := list[i]
-	//	value := tree.Search(key)
-	//	if key != value {
-	//		fmt.Println(key, value)
-	//	}
-	//}
+	for i := 9999; i >= 0; i-- {
+		key := list[i]
+		value := tree.Search(key)
+		if key != value {
+			fmt.Println(key, value)
+		}
+	}
 }
 
 func TestRbtree_Remove(t *testing.T) {
-	//rand.Seed(time.Now().Unix())
-	//tree := NewRBTree(less, equal)
-	//for i := 0; i < 5; i++ {
-	//	key := i
-	//	value := key
-	//	tree.Insert(key, value)
-	//}
-	//for i := 0; i < 5; i++ {
-	//	key := i
-	//	fmt.Println(tree.Remove(key))
-	//}
 	rand.Seed(time.Now().Unix())
 	tree := NewRBTree(less, equal)
 	list := [10000]int{}
 	for i := 0; i < 10000; i++ {
 		key := rand.Intn(10000)
-		//key := 0
 		value := key
 		tree.Insert(key, value)
 		list[i] = key
@@ -75,9 +60,6 @@ func TestRbtree_Remove(t *testing.T) {
 		if r > v {
 			v = r
 		}
-		//if !isRBTree(tree) {
-		//	fmt.Println("fuck u", key)
-		//}
 		if key != value {
 			fmt.Println(key, value)
 		}
@@ -92,7 +74,6 @@ func isRBTree(tree *rbtree) int {
 		return 0
 	} else {
 		dfs(tree, tree.root, &list, 0)
-		//fmt.Println(len(list))
 		max := 0
 		min := 999999
 		for i := 1; i < len(list); i++ {

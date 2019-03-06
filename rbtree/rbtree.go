@@ -24,6 +24,10 @@ func (tree *rbtree) Insert(k, v interface{}) {
 		if tree.less(nod.k, fa.k) {
 			now = fa.left
 		} else {
+			if tree.equal(nod.k, now.k) {
+				now.v = nod.v
+				return
+			}
 			now = fa.right
 		}
 	}
