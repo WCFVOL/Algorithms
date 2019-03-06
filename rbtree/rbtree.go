@@ -17,8 +17,6 @@ func NewRBTree(less func(a, b interface{}) bool, equal func(a, b interface{}) bo
 
 func (tree *rbtree) Insert(k, v interface{}) {
 	nod := newNode(k, v)
-	nod.left = nil
-	nod.right = nil
 	now := tree.root
 	var fa *node
 	for now != nil {
@@ -38,6 +36,7 @@ func (tree *rbtree) Insert(k, v interface{}) {
 		fa.right = nod
 	}
 	tree.insertFixUp(nod)
+	tree.size++
 }
 
 func (tree *rbtree) Search(k interface{}) interface{} {
@@ -79,6 +78,7 @@ func (tree *rbtree) Remove(k interface{}) interface{} {
 }
 
 func (tree *rbtree) removeNode(p *node) {
+	tree.size--
 	if p.left != nil && p.right != nil {
 		s := successor(p)
 		p.k = s.k
@@ -175,7 +175,7 @@ func (tree *rbtree) deleteFixUp(now *node) {
 			}
 		}
 	}
-	now.red = false
+	now.SetRed(false)
 }
 
 // 把u父亲的儿子u 替换为v 不涉及u和v的孩子
@@ -196,38 +196,42 @@ func (tree *rbtree) Clear() {
 
 func (tree *rbtree) insertFixUp(now *node) {
 	nod := now
-	for nod.p != nil && nod.p.red {
-		if nod.p == nod.p.p.left {
-			y := nod.p.p.right
-			if y != nil && y.red {
-				nod.p.red = false
-				y.red = false
-				nod.p.p.red = true
-			} else if nod == nod.p.right {
-				nod = nod.p
-				nod.leftRotate(tree)
+	for nod != nil && nod != tree.root && nod.Parent().Red() {
+		if nod.Parent() == nod.Parent().Parent().Left() {
+			y := nod.Parent().Parent().Right()
+			if y.Red() {
+				nod.Parent().SetRed(false)
+				y.SetRed(false)
+				nod.Parent().Parent().SetRed(true)
+				nod = nod.Parent().Parent()
 			} else {
-				nod.p.red = false
-				nod.p.p.red = true
-				nod.p.p.rightRotate(tree)
+				if nod == nod.Parent().Right() {
+					nod = nod.Parent()
+					nod.leftRotate(tree)
+				}
+				nod.Parent().SetRed(false)
+				nod.Parent().Parent().SetRed(true)
+				nod.Parent().Parent().rightRotate(tree)
 			}
 		} else {
-			y := nod.p.p.left
-			if y != nil && y.red {
-				nod.p.red = false
-				y.red = false
-				nod.p.p.red = true
-			} else if nod == nod.p.left {
-				nod = nod.p
-				nod.rightRotate(tree)
+			y := nod.Parent().Parent().Left()
+			if y.Red() {
+				nod.Parent().SetRed(false)
+				y.SetRed(false)
+				nod.Parent().Parent().SetRed(true)
+				nod = nod.Parent().Parent()
 			} else {
-				nod.p.red = false
-				nod.p.p.red = true
-				nod.p.p.leftRotate(tree)
+				if nod == nod.Parent().Left() {
+					nod = nod.Parent()
+					nod.rightRotate(tree)
+				}
+				nod.Parent().SetRed(false)
+				nod.Parent().Parent().SetRed(true)
+				nod.Parent().Parent().leftRotate(tree)
 			}
 		}
 	}
-	tree.root.red = false
+	tree.root.SetRed(false)
 }
 
 func predecessor(t *node) *node {

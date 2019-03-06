@@ -10,6 +10,7 @@ func newNode(k, v interface{}) *node {
 	return &node{
 		left:  nil,
 		right: nil,
+		p:     nil,
 		red:   true,
 		k:     k,
 		v:     v,
