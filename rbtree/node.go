@@ -16,52 +16,98 @@ func newNode(k, v interface{}) *node {
 	}
 }
 
-func newNil() *node {
-	return &node{
-		left:  nil,
-		right: nil,
-		red:   false,
-		k:     nil,
-		v:     nil,
+func (p *node) leftRotate(tree *rbtree) {
+	if p != nil {
+		r := p.right
+		p.right = r.left
+		if r.left != nil {
+			r.left.p = p
+		}
+		r.p = p.p
+		if p.p == nil {
+			tree.root = r
+		} else if p.p.left == p {
+			p.p.left = r
+		} else {
+			p.p.right = r
+		}
+		r.left = p
+		p.p = r
 	}
 }
 
-func (now *node) leftRotate(tree *rbtree) {
-	right := now.right
-	now.right = right.left
-	if right.left != tree.nil {
-		right.left.p = now
-	}
-	right.p = now.p
-	if now.p != tree.nil {
-		if now.p.left == now {
-			now.p.left = right
-		} else {
-			now.p.right = right
+func (p *node) rightRotate(tree *rbtree) {
+	if p != nil {
+		l := p.left
+		p.left = l.right
+		if l.right != nil {
+			l.right.p = p
 		}
-	} else {
-		tree.root = right
+		l.p = p.p
+		if p.p == nil {
+			tree.root = l
+		} else if p.p.right == p {
+			p.p.right = l
+		} else {
+			p.p.left = l
+		}
+		l.right = p
+		p.p = l
 	}
-	right.left = now
-	now.p = right
 }
 
-func (now *node) rightRotate(tree *rbtree) {
-	left := now.left
-	now.left = left.right
-	if left.right != tree.nil {
-		left.right.p = now
-	}
-	left.p = now.p
-	if now.p != tree.nil {
-		if now.p.left == now {
-			now.p.left = left
-		} else {
-			now.p.right = left
-		}
+func (nod *node) Red() bool {
+	if nod == nil {
+		return false
 	} else {
-		tree.root = left
+		return nod.red
 	}
-	left.right = now
-	now.p = left
+}
+
+func (nod *node) SetRed(red bool) {
+	if nod != nil {
+		nod.red = red
+	}
+}
+
+func (nod *node) Right() *node {
+	if nod == nil {
+		return nil
+	} else {
+		return nod.right
+	}
+}
+
+func (nod *node) SetRight(right *node) {
+	if nod != nil {
+		nod.right = right
+	}
+}
+
+func (nod *node) Left() *node {
+	if nod == nil {
+		return nil
+	} else {
+		return nod.left
+	}
+}
+
+func (nod *node) SetLeft(left *node) {
+	if nod != nil {
+		nod.left = left
+	}
+}
+
+func (nod *node) Parent() *node {
+	if nod == nil {
+		return nil
+	} else {
+		return nod.p
+	}
+}
+
+func (nod *node) SetParent(p *node) {
+	if nod != nil {
+		nod.p = p
+	}
 }
