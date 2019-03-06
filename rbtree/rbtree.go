@@ -15,6 +15,8 @@ func NewRBTree(less func(a, b interface{}) bool, equal func(a, b interface{}) bo
 		nil:   newNil(),
 	}
 	result.root = result.nil
+	//result.nil.left = result.nil
+	//result.nil.right = result.nil
 	return result
 }
 
@@ -86,10 +88,10 @@ func (tree *rbtree) removeNode(nod *node) {
 	red := now.red
 	if now.left == tree.nil {
 		x = now.right
-		tree.transplant(now, x)
+		tree.transplant(now, now.right)
 	} else if now.right == tree.nil {
 		x = now.left
-		tree.transplant(now, x)
+		tree.transplant(now, now.left)
 	} else {
 		now = tree.Minimum(now.right)
 		red = now.red
@@ -112,9 +114,6 @@ func (tree *rbtree) removeNode(nod *node) {
 }
 
 func (tree *rbtree) deleteFixUp(nod *node) {
-	//defer func(tree *node) {
-	//	fmt.Println("wtf")
-	//}(nod)
 	now := nod
 	for now != tree.root && !now.red {
 		if now == now.p.left {
@@ -125,13 +124,17 @@ func (tree *rbtree) deleteFixUp(nod *node) {
 				now.p.leftRotate(tree)
 				w = now.p.right
 			}
+			if w == tree.nil {
+				break
+			}
 			if !w.right.red && !w.left.red {
 				w.red = true
 				now = now.p
-			} else if w.left.red {
+			} else if !w.right.red {
 				w.red = true
 				w.left.red = false
 				w.rightRotate(tree)
+				w = now.p.right
 			} else {
 				w.red = now.p.red
 				now.p.red = false
@@ -147,13 +150,17 @@ func (tree *rbtree) deleteFixUp(nod *node) {
 				now.p.rightRotate(tree)
 				w = now.p.left
 			}
+			if w == tree.nil {
+				break
+			}
 			if !w.right.red && !w.left.red {
 				w.red = true
 				now = now.p
-			} else if w.right.red {
+			} else if !w.left.red {
 				w.red = true
 				w.right.red = false
 				w.leftRotate(tree)
+				w = now.p.left
 			} else {
 				w.red = now.p.red
 				now.p.red = false
