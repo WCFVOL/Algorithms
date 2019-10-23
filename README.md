@@ -1,2 +1,0 @@
-# Algorithms
-Introduction to Algorithms

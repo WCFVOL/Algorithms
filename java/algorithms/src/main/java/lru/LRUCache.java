@@ -15,45 +15,8 @@ class LRUCache {
         DLinkedNode post;
     }
 
-    /**
-     * Always add the new node right after head;
-     */
-    private void addNode(DLinkedNode node){
-        node.pre = head;
-        node.post = head.post;
-
-        head.post.pre = node;
-        head.post = node;
-    }
-
-    /**
-     * Remove an existing node from the linked list.
-     */
-    private void removeNode(DLinkedNode node){
-        DLinkedNode pre = node.pre;
-        DLinkedNode post = node.post;
-
-        pre.post = post;
-        post.pre = pre;
-    }
-
-    /**
-     * Move certain node in between to the head.
-     */
-    private void moveToHead(DLinkedNode node){
-        this.removeNode(node);
-        this.addNode(node);
-    }
-
-    // pop the current tail.
-    private DLinkedNode popTail(){
-        DLinkedNode res = tail.pre;
-        this.removeNode(res);
-        return res;
-    }
-
     private HashMap<Integer, DLinkedNode>
-            cache = new HashMap<Integer, DLinkedNode>();
+            cache = new HashMap<Integer, DLinkedNode>(1024);
     private int count;
     private int capacity;
     private DLinkedNode head, tail;
@@ -111,7 +74,43 @@ class LRUCache {
             node.value = value;
             this.moveToHead(node);
         }
+    }
+    /**
+     * Always add the new node right after head;
+     */
+    private void addNode(DLinkedNode node){
+        node.pre = head;
+        node.post = head.post;
 
+        head.post.pre = node;
+        head.post = node;
+    }
+
+    /**
+     * Remove an existing node from the linked list.
+     */
+    private void removeNode(DLinkedNode node){
+//        DLinkedNode pre = node.pre;
+//        DLinkedNode post = node.post;
+        node.post.pre = node.pre;
+        node.pre.post=node.post;
+//        pre.post = post;
+//        post.pre = pre;
+    }
+
+    /**
+     * Move certain node in between to the head.
+     */
+    private void moveToHead(DLinkedNode node){
+        this.removeNode(node);
+        this.addNode(node);
+    }
+
+    // pop the current tail.
+    private DLinkedNode popTail(){
+        DLinkedNode res = tail.pre;
+        this.removeNode(res);
+        return res;
     }
 }
 
